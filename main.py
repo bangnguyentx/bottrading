@@ -14,7 +14,7 @@ from ta.momentum import RSIIndicator
 from ta.volatility import BollingerBands, AverageTrueRange
 
 # ==================== CONFIG (dùng env var để bảo mật) ====================
-TOKEN = os.getenv("TOKEN", "8026512064:AAFSq32IIXkPkXPi7kMl-wM5NoD_gqSmpd0")
+TOKEN = os.getenv("TOKEN", "8558243772:AAEOuQ1SHOsIEFsXEGFGUYPcrIYLvEXqdZg")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "7760459637"))
 
 COINS = [
