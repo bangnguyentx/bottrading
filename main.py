@@ -12,6 +12,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from ta.trend import MACD, EMAIndicator
 from ta.momentum import RSIIndicator
 from ta.volatility import BollingerBands, AverageTrueRange
+import threading     # <--- THÊM DÒNG NÀY
+from flask import Flask  # <--- THÊM DÒNG NÀY
 
 # ==================== CONFIG (dùng env var để bảo mật) ====================
 TOKEN = os.getenv("TOKEN", "8558243772:AAEOuQ1SHOsIEFsXEGFGUYPcrIYLvEXqdZg")
@@ -524,5 +526,36 @@ def handle_all_other_messages(message):
         # Người dùng thường, có thể trả lời hoặc không
         pass # bot.reply_to(message, "Gõ /start để bắt đầu.")
         
-print("Bot đang chạy...")
-bot.infinity_polling()
+# === BẮT ĐẦU PHẦN CODE MỚI THAY THẾ ===
+
+app = Flask(__name__)
+
+# Tạo một route '/' để Render có thể ping
+@app.route('/')
+def home():
+    return "Bot service is alive and polling!"
+
+def run_bot():
+    """Chạy bot polling trong một luồng riêng."""
+    print("Bot đang khởi động (polling)...")
+    bot.infinity_polling()
+    print("Bot đã dừng polling.")
+
+if __name__ == "__main__":
+    # 1. Bắt đầu bot polling trong một luồng (thread) riêng
+    # Điều này giải phóng luồng chính để chạy máy chủ web
+    print("Bắt đầu luồng polling của bot...")
+    polling_thread = threading.Thread(target=run_bot)
+    polling_thread.daemon = True  # Tự động tắt luồng khi ứng dụng chính tắt
+    polling_thread.start()
+
+    # 2. Lấy cổng (PORT) mà Render chỉ định
+    # Dùng os.environ.get('PORT')
+    port = int(os.environ.get('PORT', 5000)) # Mặc định 5000 nếu chạy local
+
+    # 3. Chạy máy chủ web (Flask)
+    # Render sẽ kết nối vào cổng này để kiểm tra
+    print(f"Máy chủ web (Flask) đang chạy trên cổng {port}...")
+    app.run(host='0.0.0.0', port=port)
+
+# === KẾT THÚC PHẦN CODE MỚI ===
