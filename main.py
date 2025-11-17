@@ -43,7 +43,7 @@ def get_klines(symbol):
 def add_indicators(df):
     df["ema200"] = EMAIndicator(df["close"], window=200).ema_indicator()
     macd = MACD(df["close"])
-    df["macd["macd"] = macd.macd()
+    df["macd"] = macd.macd()
     df["macd_signal"] = macd.macd_signal()
     df["macd_hist"] = macd.macd_diff()
     df["rsi"] = RSIIndicator(df["close"], 14).rsi()
